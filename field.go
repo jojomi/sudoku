@@ -10,11 +10,11 @@ type Field struct {
 	Index     int
 	Value     int
 	NonValues *IntSet
-	sudoku    Sudoku
+	sudoku    *Sudoku
 }
 
 // NewField creates a new Field
-func NewField(sudoku Sudoku, index, value int) Field {
+func NewField(sudoku *Sudoku, index, value int) Field {
 	f := Field{
 		sudoku:    sudoku,
 		Index:     index,

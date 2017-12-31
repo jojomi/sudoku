@@ -24,8 +24,8 @@ type Sudoku struct {
 }
 
 // New returns a new sudoku puzzle
-func New(size int) Sudoku {
-	s := Sudoku{
+func New(size int) *Sudoku {
+	s := &Sudoku{
 		Size:     size,
 		MaxValue: size * size,
 	}

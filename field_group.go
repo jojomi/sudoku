@@ -4,13 +4,13 @@ import "fmt"
 
 // FieldGroup is a set of Fields (Row/Col/Block)
 type FieldGroup struct {
-	sudoku Sudoku
+	sudoku *Sudoku
 	Fields []*Field
 	Name   string
 }
 
 // NewFieldGroup makes a new fieldgroup of specified size
-func NewFieldGroup(sudoku Sudoku, len int, name string) FieldGroup {
+func NewFieldGroup(sudoku *Sudoku, len int, name string) FieldGroup {
 	fg := FieldGroup{
 		sudoku: sudoku,
 		Fields: make([]*Field, len),
