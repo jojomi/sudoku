@@ -51,7 +51,20 @@ func (f Field) IsSolved() bool {
 
 // Solvable checks if the Field can be solved (all other values excluded)
 func (f Field) Solvable() bool {
+	// TODO implement
 	return false
+}
+
+// PossibleValues returns the list of possible values for this field
+func (f Field) PossibleValues() []int {
+	result := make([]int, 0)
+	for p := 1; p <= f.sudoku.MaxValue; p++ {
+		if f.NonValues.Contains(p) {
+			continue
+		}
+		result = append(result, p)
+	}
+	return result
 }
 
 // String returns a human-friendly value
