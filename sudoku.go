@@ -212,6 +212,30 @@ func (s Sudoku) addSolution(f *Field, value int) {
 
 // Solve solves
 func (s Sudoku) Solve() Sudoku {
+	res := SolvingResult{
+		FoundNew: true,
+	}
+	for !s.IsSolved() && res.FoundNew {
+		res = s.SolveStep()
+		fmt.Println(res)
+		fmt.Println(s)
+	}
+	return s
+}
+
+type SolvingResult struct {
+	FoundNew bool
+	Message  string
+}
+
+func (s SolvingResult) String() string {
+	return s.Message
+}
+
+// SolveStep solves one step
+func (s Sudoku) SolveStep() SolvingResult {
+	var res SolvingResult
+
 	// loop all solved fields at begin
 	//   create falsity information along all three dimensions
 	for _, f := range s.Fields {
@@ -224,7 +248,11 @@ func (s Sudoku) Solve() Sudoku {
 		// not solved
 		if !f.IsSolved() {
 			if f.Solve() {
-				fmt.Printf("Field %d could be deduced because there was only one more possible value which is %d\n", f.Index, f.Value)
+				res = SolvingResult{
+					FoundNew: true,
+					Message:  fmt.Sprintf("Field %d could be deduced because there was only one more possible value which is %d", f.Index, f.Value),
+				}
+				return res
 			}
 		}
 	}
@@ -234,13 +262,22 @@ func (s Sudoku) Solve() Sudoku {
 	//     loop all fields for checking
 	//       solve and go back to start
 	for _, row := range s.rows {
-		row.Solve()
+		res = row.Solve()
+		if res.FoundNew {
+			return res
+		}
 	}
 	for _, col := range s.cols {
-		col.Solve()
+		res = col.Solve()
+		if res.FoundNew {
+			return res
+		}
 	}
 	for _, block := range s.blocks {
-		block.Solve()
+		res = block.Solve()
+		if res.FoundNew {
+			return res
+		}
 	}
-	return s
+	return res
 }

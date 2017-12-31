@@ -30,7 +30,7 @@ func (f FieldGroup) IsSolved() bool {
 }
 
 // Solve solves the group if possible (one step!)
-func (f FieldGroup) Solve() {
+func (f FieldGroup) Solve() SolvingResult {
 	// loop possible values
 valueLoop:
 	for val := 1; val <= f.sudoku.MaxValue; val++ {
@@ -54,9 +54,13 @@ valueLoop:
 		// if exactly one option, solve!
 		if deducedField != -1 {
 			f.sudoku.addSolutionByIndex(deducedField, val)
-			fmt.Printf("Deduced by checking %s: Field %d must be of value %d\n", f.Name, deducedField, val)
+			return SolvingResult{
+				FoundNew: true,
+				Message:  fmt.Sprintf("Deduced by checking %s: Field %d must be of value %d", f.Name, deducedField, val),
+			}
 		}
 	}
+	return SolvingResult{}
 }
 
 // String returns a string representation of this FieldGroup
