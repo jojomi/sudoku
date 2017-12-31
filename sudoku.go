@@ -2,9 +2,12 @@ package sudoku
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // Optimization ideas:
@@ -64,6 +67,40 @@ func New(size int) *Sudoku {
 			s.blocks[blockIndex].Fields[innerBlockRow*s.Size+innerBlockCol] = &field
 		}
 	}
+	return s
+}
+
+// FromFile loads a sudoku definition from a file
+func FromFile(filename string) *Sudoku {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	inputString := string(data)
+
+	// clean data
+	cleanString := strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return -1
+		}
+		return r
+	}, inputString)
+
+	mathSize := math.Sqrt(math.Sqrt(float64(len(cleanString))))
+	size := int(mathSize)
+	// TODO check size
+
+	initData := make([]int, int(math.Pow(float64(size), 4)))
+	for i, c := range cleanString {
+		initData[i], err = strconv.Atoi(string(c))
+		if err != nil {
+			// this allows for all non-whitespace chars to signal empty fields
+			initData[i] = 0
+		}
+	}
+
+	s := New(size)
+	s.Init(initData)
 	return s
 }
 

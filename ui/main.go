@@ -26,7 +26,7 @@ func main() {
 	//s.Solve()
 	fmt.Println(s)*/
 
-	s3 := sudoku.New(3)
+	/*s3 := sudoku.New(3)
 	s3.Init([]int{
 		9, 6, 0, 5, 0, 0, 1, 0, 4,
 		0, 0, 0, 4, 0, 0, 5, 6, 0,
@@ -42,5 +42,10 @@ func main() {
 	for !s3.IsSolved() {
 		s3.Solve()
 	}
-	fmt.Println(s3)
+	fmt.Println(s3)*/
+
+	s4 := sudoku.FromFile("test/neuner.sudoku")
+	fmt.Println(s4)
+	s4.Solve()
+	fmt.Println(s4)
 }
