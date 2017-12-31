@@ -26,6 +26,11 @@ type Sudoku struct {
 	blocks      []FieldGroup
 }
 
+type SolveOptions struct {
+	PrintSteps bool
+	DeduceOnly bool
+}
+
 // New returns a new sudoku puzzle
 func New(size int) *Sudoku {
 	s := &Sudoku{
@@ -211,15 +216,20 @@ func (s Sudoku) addSolution(f *Field, value int) {
 }
 
 // Solve solves
-func (s Sudoku) Solve() Sudoku {
+func (s Sudoku) Solve(opts SolveOptions) Sudoku {
 	res := SolvingResult{
 		FoundNew: true,
 	}
+	// Phase 1: Deduction
 	for !s.IsSolved() && res.FoundNew {
-		res = s.SolveStep()
-		fmt.Println(res)
-		fmt.Println(s)
+		res = s.SolveStep(opts)
+		if opts.PrintSteps {
+			fmt.Println(res)
+			fmt.Println(s)
+		}
 	}
+	// Phase 2: Backtracking
+	// TODO
 	return s
 }
 
@@ -233,7 +243,7 @@ func (s SolvingResult) String() string {
 }
 
 // SolveStep solves one step
-func (s Sudoku) SolveStep() SolvingResult {
+func (s Sudoku) SolveStep(opts SolveOptions) SolvingResult {
 	var res SolvingResult
 
 	// loop all solved fields at begin

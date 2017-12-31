@@ -8,11 +8,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	solveOptionsPrintSteps bool
+)
+
 func main() {
 	var rootCmd = &cobra.Command{
 		Use: "sudoku filename",
 		Run: cmdSolve,
 	}
+	rootCmd.PersistentFlags().BoolVarP(&solveOptionsPrintSteps, "print-steps", "p", false, "print steps while solving sudoku")
 
 	rootCmd.Execute()
 }
@@ -24,9 +29,14 @@ func cmdSolve(cmd *cobra.Command, args []string) {
 	}
 
 	s := sudoku.FromFile(args[0])
+
+	opts := sudoku.SolveOptions{
+		PrintSteps: solveOptionsPrintSteps,
+	}
+
 	fmt.Println("parsed sudoku from input:")
 	fmt.Println(s)
-	s.Solve()
+	s.Solve(opts)
 	fmt.Println("solution:")
 	fmt.Println(s)
 }
