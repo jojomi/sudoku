@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 )
 
 // Optimization ideas:
@@ -80,35 +81,30 @@ func (s Sudoku) IsSolved() bool {
 func (s Sudoku) String() string {
 	result := ""
 	lineSize := s.MaxValue
+	drawBorder := true
+
+	// top border
+	if drawBorder {
+		result += "+" + strings.Repeat(strings.Repeat("-", s.Size)+"+", s.Size) + "\n"
+	}
 	for row := 0; row < lineSize; row++ {
+		if drawBorder {
+			result += "|"
+		}
 		for col := 0; col < lineSize; col++ {
 			index := row*lineSize + col
 			field := s.Fields[index]
 			result += field.String()
+			// end of block?
+			if drawBorder && col%s.Size == s.Size-1 {
+				result += "|"
+			}
 		}
 		result += "\n"
+		if drawBorder && row%s.Size == s.Size-1 {
+			result += "+" + strings.Repeat(strings.Repeat("-", s.Size)+"+", s.Size) + "\n"
+		}
 	}
-
-	/*result += "\nRows:\n"
-	for row := 0; row < lineSize; row++ {
-		result += s.rows[row].String()
-		result += "\n"
-	}
-	result += "\nCols:\n"
-	for col := 0; col < lineSize; col++ {
-		result += s.cols[col].String()
-		result += "\n"
-	}
-	result += "\nBlocks:\n"
-	for block := 0; block < lineSize; block++ {
-		result += s.blocks[block].String()
-		result += "\n"
-	}
-
-	result += "\nNonValues:\n"
-	for _, f := range s.Fields {
-		result += fmt.Sprintf("%d: %v", f.Index, f.NonValues)
-	}*/
 
 	return result
 }
