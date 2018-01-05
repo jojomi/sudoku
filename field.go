@@ -32,7 +32,7 @@ func (f *Field) DenyValue(value int) {
 // Solve solves this Field
 func (f *Field) Solve() bool {
 	// if newly solved, return true
-	if len(f.NonValues.set) != f.sudoku.MaxValue-1 {
+	if !f.Solvable() {
 		return false
 	}
 	for i := 1; i <= f.sudoku.MaxValue; i++ {
@@ -51,8 +51,7 @@ func (f Field) IsSolved() bool {
 
 // Solvable checks if the Field can be solved (all other values excluded)
 func (f Field) Solvable() bool {
-	// TODO implement
-	return false
+	return len(f.NonValues.set) == f.sudoku.MaxValue-1
 }
 
 // PossibleValues returns the list of possible values for this field

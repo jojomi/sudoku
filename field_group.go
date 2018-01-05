@@ -67,6 +67,9 @@ valueLoop:
 func (f FieldGroup) String() string {
 	result := ""
 	for _, field := range f.Fields {
+		if field == nil {
+			continue
+		}
 		result += field.String()
 	}
 	return result

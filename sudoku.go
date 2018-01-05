@@ -2,6 +2,7 @@ package sudoku
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"math"
@@ -76,20 +77,26 @@ func New(size int) *Sudoku {
 }
 
 // FromFile loads a sudoku definition from a file
-func FromFile(filename string) *Sudoku {
+func FromFile(filename string) (*Sudoku, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
-	inputString := string(data)
+	return FromReader(strings.NewReader(string(data)))
+}
 
+func FromReader(input io.Reader) (*Sudoku, error) {
+	data, err := ioutil.ReadAll(input)
+	if err != nil {
+		return nil, err
+	}
 	// clean data
 	cleanString := strings.Map(func(r rune) rune {
 		if unicode.IsSpace(r) {
 			return -1
 		}
 		return r
-	}, inputString)
+	}, string(data))
 
 	mathSize := math.Sqrt(math.Sqrt(float64(len(cleanString))))
 	size := int(mathSize)
@@ -106,7 +113,7 @@ func FromFile(filename string) *Sudoku {
 
 	s := New(size)
 	s.Init(initData)
-	return s
+	return s, nil
 }
 
 // IsSolved checks if this sudoku is solved
@@ -178,6 +185,16 @@ func (s Sudoku) GetBlock(f *Field) FieldGroup {
 	blockIndex := int(math.Floor(float64(row)/float64(s.Size)))*s.Size + int(math.Floor(float64(col)/float64(s.Size)))
 
 	return s.blocks[blockIndex]
+}
+
+func (s Sudoku) SolvedFieldCount() int {
+	result := 0
+	for _, f := range s.Fields {
+		if f.IsSolved() {
+			result++
+		}
+	}
+	return result
 }
 
 func (s Sudoku) addSolutionByIndex(index, value int) {
