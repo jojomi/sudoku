@@ -100,3 +100,24 @@ func TestSolveStepNonValues(t *testing.T) {
 	assert.True(t, s.Fields[0].IsSolved())
 	assert.Equal(t, 3, s.Fields[0].Value)
 }
+
+func TestSolveDeduction(t *testing.T) {
+	s, _ := FromFile("testfiles/simple.sudoku")
+	assert.False(t, s.IsSolved())
+	s.Solve(SolveOptions{})
+	assert.True(t, s.IsSolved(), "Simple 2x2 sudoku not solved")
+}
+
+func TestSolveDeduction3x3(t *testing.T) {
+	s, _ := FromFile("testfiles/easy.sudoku")
+	assert.False(t, s.IsSolved())
+	s.Solve(SolveOptions{})
+	assert.True(t, s.IsSolved(), "Easy 3x3 sudoku not solved")
+}
+
+func TestSolveBruteForce(t *testing.T) {
+	s, _ := FromFile("testfiles/hard.sudoku")
+	assert.False(t, s.IsSolved())
+	s.Solve(SolveOptions{})
+	assert.True(t, s.IsSolved(), "Hard 3x3 sudoku not solved")
+}
