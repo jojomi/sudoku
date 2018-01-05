@@ -30,6 +30,7 @@ type Sudoku struct {
 type SolveOptions struct {
 	PrintSteps bool
 	DeduceOnly bool
+	DontDeduce bool
 }
 
 // New returns a new sudoku puzzle
@@ -166,6 +167,16 @@ func (s Sudoku) Init(input []int) Sudoku {
 	return s
 }
 
+// Reason
+func (s Sudoku) Reason() Sudoku {
+	for _, f := range s.Fields {
+		if f.IsSolved() {
+			s.addSolution(f, f.Value)
+		}
+	}
+	return s
+}
+
 // GetRow returns all fields of the same row as given field
 func (s Sudoku) GetRow(f *Field) FieldGroup {
 	row := int(math.Floor(float64(f.Index) / float64(s.MaxValue)))
@@ -232,21 +243,72 @@ func (s Sudoku) addSolution(f *Field, value int) {
 	}
 }
 
+// IsValidSolution checks a sudoku for validity
+func (s Sudoku) IsValidSolution() bool {
+	var set *IntSet
+
+	for _, row := range s.rows {
+		set = NewIntSet()
+		for _, f := range row.Fields {
+			if f.IsSolved() {
+				set.Add(f.Value)
+			}
+		}
+		if len(set.Values()) < s.MaxValue {
+			return false
+		}
+	}
+
+	for _, col := range s.cols {
+		set = NewIntSet()
+		for _, f := range col.Fields {
+			if f.IsSolved() {
+				set.Add(f.Value)
+			}
+		}
+		if len(set.Values()) < s.MaxValue {
+			return false
+		}
+	}
+
+	for _, block := range s.blocks {
+		set = NewIntSet()
+		for _, f := range block.Fields {
+			if f.IsSolved() {
+				set.Add(f.Value)
+			}
+		}
+		if len(set.Values()) < s.MaxValue {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Solve solves
 func (s Sudoku) Solve(opts SolveOptions) Sudoku {
 	res := SolvingResult{
 		FoundNew: true,
 	}
+
+	// what do we already know?
+	s.Reason()
+
 	// Phase 1: Deduction
-	for !s.IsSolved() && res.FoundNew {
-		res = s.SolveStep(opts)
-		if opts.PrintSteps {
-			fmt.Println(res)
-			fmt.Println(s)
+	if !opts.DontDeduce {
+		for !s.IsSolved() && res.FoundNew {
+			res = s.SolveStep(opts)
+			if opts.PrintSteps {
+				fmt.Println(res)
+				fmt.Println(s)
+			}
 		}
 	}
 	// Phase 2: Backtracking
-	// TODO
+	if !s.IsSolved() {
+		s.SolveBrute(opts)
+	}
 	return s
 }
 
@@ -307,4 +369,68 @@ func (s Sudoku) SolveStep(opts SolveOptions) SolvingResult {
 		}
 	}
 	return res
+}
+
+func (s Sudoku) UnsolvedFields() []*Field {
+	result := make([]*Field, 0)
+	for _, f := range s.Fields {
+		if !f.IsSolved() {
+			result = append(result, f)
+		}
+	}
+	return result
+}
+
+func (s Sudoku) CanPut(field *Field, value int) bool {
+	for _, f := range s.GetRow(field).Fields {
+		if f.Value == value {
+			return false
+		}
+	}
+	for _, f := range s.GetCol(field).Fields {
+		if f.Value == value {
+			return false
+		}
+	}
+	for _, f := range s.GetBlock(field).Fields {
+		if f.Value == value {
+			return false
+		}
+	}
+	return true
+}
+
+// SolveBrute brute-forces a sudoku
+func (s Sudoku) SolveBrute(options SolveOptions) bool {
+	if options.PrintSteps {
+		fmt.Println("I need brute force.")
+	}
+	// missing fields?
+	fields := s.UnsolvedFields()
+
+	// solved?
+	return s.solveBruteStep(options, fields)
+}
+
+func (s Sudoku) solveBruteStep(options SolveOptions, fields []*Field) bool {
+	if len(fields) == 0 {
+		return s.IsValidSolution()
+	}
+	f := fields[0]
+
+	for _, v := range f.PossibleValues() {
+		if options.PrintSteps {
+			fmt.Printf("trying %d at field %d\n", v, f.Index)
+		}
+		if !s.CanPut(f, v) {
+			continue
+		}
+		f.Value = v
+		if s.solveBruteStep(options, fields[1:]) {
+			return true
+		}
+	}
+	f.Value = 0
+
+	return false
 }

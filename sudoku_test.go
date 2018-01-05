@@ -29,6 +29,12 @@ func TestFromReader(t *testing.T) {
 	assert.Equal(t, 15, s.SolvedFieldCount())
 }
 
+func TestSudokuString(t *testing.T) {
+	s, _ := FromFile("testfiles/small.sudoku")
+
+	assert.Equal(t, "+--+--+\n|12|34|\n|34|21|\n+--+--+\n|21|43|\n|43|12|\n+--+--+\n", s.String())
+}
+
 func TestIsSolved(t *testing.T) {
 	s, _ := FromReader(strings.NewReader(`
 		12 34
@@ -101,6 +107,25 @@ func TestSolveStepNonValues(t *testing.T) {
 	assert.Equal(t, 3, s.Fields[0].Value)
 }
 
+func TestSolveBrute(t *testing.T) {
+	s, _ := FromReader(strings.NewReader(`
+		12 34
+		34 ..
+
+		21 ..
+		43 ..
+	`))
+	s.Solve(SolveOptions{DontDeduce: true})
+}
+
+func TestSolveIsValidSolution(t *testing.T) {
+	s, _ := FromFile("testfiles/simple.sudoku")
+	s.Solve(SolveOptions{})
+	assert.True(t, s.IsValidSolution())
+	s.Fields[0].Value = 4
+	assert.False(t, s.IsValidSolution())
+}
+
 func TestSolveDeduction(t *testing.T) {
 	s, _ := FromFile("testfiles/simple.sudoku")
 	assert.False(t, s.IsSolved())
@@ -113,11 +138,4 @@ func TestSolveDeduction3x3(t *testing.T) {
 	assert.False(t, s.IsSolved())
 	s.Solve(SolveOptions{})
 	assert.True(t, s.IsSolved(), "Easy 3x3 sudoku not solved")
-}
-
-func TestSolveBruteForce(t *testing.T) {
-	s, _ := FromFile("testfiles/hard.sudoku")
-	assert.False(t, s.IsSolved())
-	s.Solve(SolveOptions{})
-	assert.True(t, s.IsSolved(), "Hard 3x3 sudoku not solved")
 }

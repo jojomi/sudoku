@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jojomi/sudoku"
@@ -28,7 +29,10 @@ func cmdSolve(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	s := sudoku.FromFile(args[0])
+	s, err := sudoku.FromFile(args[0])
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	opts := sudoku.SolveOptions{
 		PrintSteps: solveOptionsPrintSteps,
