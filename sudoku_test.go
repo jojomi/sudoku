@@ -139,3 +139,20 @@ func TestSolveDeduction3x3(t *testing.T) {
 	s.Solve(SolveOptions{})
 	assert.True(t, s.IsSolved(), "Easy 3x3 sudoku not solved")
 }
+
+func TestSolveBruteHard(t *testing.T) {
+	s, _ := FromFile("testfiles/hard.sudoku")
+	assert.False(t, s.IsSolved())
+	s.Solve(SolveOptions{})
+	assert.True(t, s.IsSolved(), "Hard 3x3 sudoku not solved")
+}
+
+func TestSolveBruteVeryHard(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping malloc count in short mode")
+	}
+	s, _ := FromFile("testfiles/very-hard.sudoku")
+	assert.False(t, s.IsSolved())
+	s.Solve(SolveOptions{DontDeduce: true})
+	assert.True(t, s.IsSolved(), "Very hard 3x3 sudoku not solved")
+}
