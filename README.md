@@ -84,3 +84,15 @@ real    0m0,034s
 user    0m0,007s
 sys     0m0,009s
 ```
+
+
+## State of the Union
+
+Basically this code can solve any sudoku out there that is solvable. If there is multiple solutions to a puzzle, this program will return one of them only.
+
+
+### How to Improve?
+
+The tool could be more clever in **calculating** solutions rather then brute forcing. There is a good list of tricks listed [here](https://www.sudokuoftheday.com/techniques/). Currently techniques 1, 2, and 12 are implemented. If there would be more tricks in the codebase, the solver could explain his way to solving better (`-p` flag).
+
+If you are interested in teaching your computer some of those tricks, please do so and file a Pull Request, so everyone can profit.
