@@ -1,6 +1,10 @@
 # sudoku
 Solving sudoku puzzles in Golang
 
+[![CircleCI](https://circleci.com/gh/jojomi/sudoku.svg?style=svg)](https://circleci.com/gh/jojomi/sudoku)
+[![Coverage Status](https://coveralls.io/repos/github/jojomi/sudoku/badge.svg?branch=master)](https://coveralls.io/github/jojomi/sudoku?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jojomi/sudoku)](https://goreportcard.com/report/github.com/jojomi/sudoku)
+
 
 # Execute
 
